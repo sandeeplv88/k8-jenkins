@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: jenkins
+  template:
+    metadata:
+      labels:
+        name: jenkins
+    spec:
+      volumes:
+      - name: jenkins-vol
+        emptyDir:
+          sizeLimit: 1250Mi 
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:latest
+          ports:
+            - name: http-port
+              containerPort: 8080
+            - name: jnlp-port
+              containerPort: 50000
+          volumeMounts:
+            - name: jenkins-vol
+              mountPath: /var/jenkins_home
